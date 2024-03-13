@@ -1,7 +1,7 @@
 # Helm Install Atomic Flag
 
 ## Step-01: Introduction
-- We will learn to use `--atomic` flag when installing the Helm Release and also understand the importance of using it in a practical way
+- We will learn to use `--atomic` flag when installing the Helm Release and also understand the importance of using it in a practical way.It is mainly used to delete the chart if it is failed to install. Without atomic flag, if the chart installation failed,then it is not uninstalled automatically.
 
 ## Step-02: Install Helm Chart - Release: dev101
 ```t
