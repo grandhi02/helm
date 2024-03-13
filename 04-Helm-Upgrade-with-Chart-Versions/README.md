@@ -25,14 +25,36 @@
 helm search repo mychart2
 Observation: Should display latest version of mychart2 from stacksimplify helm repo
 
+PS C:\Users\grandhiv\helloworld> helm search repo mychart2
+NAME                    CHART VERSION   APP VERSION     DESCRIPTION
+stacksimplify/mychart2  0.4.0           4.0.0           A Helm chart for Kubernetes
+PS C:\Users\grandhiv\helloworld>
+
+
+
 # Search Helm Repo with --versions
 helm search repo mychart2 --versions
 Observation: Should display all versions of mychart2
 
+PS C:\Users\grandhiv\helloworld> helm search repo mychart2 --versions
+NAME                    CHART VERSION   APP VERSION     DESCRIPTION
+stacksimplify/mychart2  0.4.0           4.0.0           A Helm chart for Kubernetes
+stacksimplify/mychart2  0.3.0           3.0.0           A Helm chart for Kubernetes
+stacksimplify/mychart2  0.2.0           2.0.0           A Helm chart for Kubernetes
+stacksimplify/mychart2  0.1.0           1.0.0           A Helm chart for Kubernetes
+PS C:\Users\grandhiv\helloworld>
+
+
 # Search Helm Repo with --version
 helm search repo mychart2 --version "CHART-VERSIONS"
 helm search repo mychart2 --version "0.2.0"
-Observation: Should display specified version of helm chart 
+Observation: Should display specified version of helm chart
+
+PS C:\Users\grandhiv\helloworld> helm search repo mychart2 --version 0.2.0
+NAME                    CHART VERSION   APP VERSION     DESCRIPTION
+stacksimplify/mychart2  0.2.0           2.0.0           A Helm chart for Kubernetes
+PS C:\Users\grandhiv\helloworld> 
+
 ```
 
 ## Step-03: Install Helm Chart by specifying Chart Version
@@ -40,12 +62,50 @@ Observation: Should display specified version of helm chart
 # Install Helm Chart by specifying Chart Version
 helm install myapp101 stacksimplify/mychart2 --version "CHART-VERSION"
 helm install myapp101 stacksimplify/mychart2 --version "0.1.0"
+```
+##### if u dont specify the chart-version while installing, it installs the latest version
 
+```t
+PS C:\Users\grandhiv\helloworld> helm install myapp2 stacksimplify/mychart2 
+NAMESPACE: default
+REVISION: 1
+1. Get the application URL by running these commands:
+  export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services myapp2-mychart2)
+  export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+PS C:\Users\grandhiv\helloworld>
+PS C:\Users\grandhiv\helloworld> helm history myapp2
+REVISION        UPDATED                         STATUS          CHART           APP VERSION     DESCRIPTION     
+1               Wed Mar 13 17:10:28 2024        deployed        mychart2-0.4.0  4.0.0           Install complete
+PS C:\Users\grandhiv\helloworld> 
+````
+#### But if have specified the version, it installs the specified version
+```t
+PS C:\Users\grandhiv\helloworld> helm install myapp2 stacksimplify/mychart2 --version 0.2.0
+NAME: myapp2
+LAST DEPLOYED: Wed Mar 13 17:18:48 2024
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+NOTES:
+1. Get the application URL by running these commands:
+  export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services myapp2-mychart2)
+  export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+PS C:\Users\grandhiv\helloworld>
+PS C:\Users\grandhiv\helloworld>
+PS C:\Users\grandhiv\helloworld>
+PS C:\Users\grandhiv\helloworld> helm history myapp2
+REVISION        UPDATED                         STATUS          CHART           APP VERSION     DESCRIPTION     
+1               Wed Mar 13 17:18:48 2024        deployed        mychart2-0.2.0  2.0.0           Install complete
+PS C:\Users\grandhiv\helloworld> 
+```
+```t
 # List Helm Release
 helm list 
 
 # List Kubernetes Resources Deployed as part of this Helm Release
-helm status myapp101 --show-resources
+helm status myapp2 --show-resources
 
 # Access Application
 http://localhost:31232
@@ -58,10 +118,31 @@ kubectl logs -f POD-NAME
 ## Step-04: Helm Upgrade using Chart Version
 ```t
 # Helm Upgrade using Chart Version
-helm upgrade myapp101 stacksimplify/mychart2 --version "0.2.0"
+helm upgrade myapp2 stacksimplify/mychart2 --version "0.4.0"
+
+# The output : 
+PS C:\Users\grandhiv\helloworld> helm upgrade myapp2 stacksimplify/mychart2 --version "0.4.0"
+Release "myapp2" has been upgraded. Happy Helming!
+NAME: myapp2
+LAST DEPLOYED: Wed Mar 13 17:27:49 2024
+NAMESPACE: default
+STATUS: deployed
+REVISION: 2
+NOTES:
+1. Get the application URL by running these commands:
+  export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services myapp2-mychart2)
+  export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+PS C:\Users\grandhiv\helloworld> 
 
 # List Helm Release
-helm list 
+helm list
+
+PS C:\Users\grandhiv\helloworld> helm list
+NAME       NAMESPACE       REVISION        UPDATED                         STATUS          CHART      APP VERSION
+myapp2      default         2   2024-03-13 17:27:49.367344 +0530 IST    deployed        mychart2-0.4.0  4.0.0
+
+PS C:\Users\grandhiv\helloworld> 
 
 # List Kubernetes Resources Deployed as part of this Helm Release
 helm status myapp101 --show-resources
@@ -74,6 +155,9 @@ helm history myapp101
 ```
 
 ## Step-05: Helm Upgrade without Chart Version
+
+This will upgrade the charts to latest version
+
 ```t
 # Helm Upgrade using Chart Version
 helm upgrade myapp101 stacksimplify/mychart2
@@ -114,7 +198,8 @@ helm history myapp101
 ```
 
 ## Step-07: Helm Rollback to specific Revision
-- Roll back a release to a previous revision or a specific revision
+- Roll back a release to a previous revision chart version from current revision chart version if the version is not specified or a specific revision
+- 
 ```t
 # Rollback to previous version
 helm rollback RELEASE-NAME REVISION
