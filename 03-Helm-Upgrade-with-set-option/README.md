@@ -165,6 +165,8 @@ helm status myapp1 --revision 2
 ```t
 # Uninstall Helm Release
 helm uninstall myapp1
+![image](https://github.com/grandhi02/helm/assets/45489301/090f9763-e363-4622-979c-2155dfe0a0c1)
+
 ```
 
 
