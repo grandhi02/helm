@@ -126,8 +126,34 @@ helm status myapp1
 # Helm Status - Show Description (display the description message of the named release)
 helm status myapp1 --show-desc    
 
-# Helm Status - Show Resources (display the resources of the named release)
-helm status myapp1  --show-resources   
+# Helm Status - Show Resources (display the resources of the named release like the deployments,services, pods etc)
+helm status myapp  --show-resources
+# The output can be
+PS C:\Users\grandhiv\helloworld> helm status myapp --show-resources
+NAME: myapp
+LAST DEPLOYED: Wed Mar 13 16:24:35 2024
+NAMESPACE: default
+REVISION: 3
+NAME             TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+myapp-mychart1   NodePort   10.106.209.172   <none>        80:31231/TCP   92m
+
+==> v1/Deployment
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+myapp-mychart1   4/4     4            4           92m
+
+==> v1/Pod(related)
+NAME                              READY   STATUS    RESTARTS   AGE
+myapp-mychart1-787d958499-6hb5s   1/1     Running   0          13m
+myapp-mychart1-787d958499-kzd5m   1/1     Running   0          12m
+myapp-mychart1-787d958499-qztqv   1/1     Running   0          13m
+myapp-mychart1-787d958499-tcb8w   1/1     Running   0          11m
+
+
+NOTES:
+1. Get the application URL by running these commands:
+  export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services myapp-mychart1)
+  export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
 
 # Helm Status - revision (display the status of the named release with revision)
 helm status RELEASE_NAME --revision int
