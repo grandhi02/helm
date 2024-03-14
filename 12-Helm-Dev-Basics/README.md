@@ -128,7 +128,8 @@ helm template myapp101 .
 ```
 
 ## Step-06: Controlling Whitespaces
-- **{{- .Chart.name }}:**  If a hyphen is added before the statement, `{{- .Chart.name }}` then the leading whitespace will be ignored during the rendering
+- **{{- .Chart.name }}:**  If a hyphen is added before the statement, `{{- .Chart.name }}` then the leading whitespace will be ignored during the rendering.There should be no gap b/w ``{{`` and ``-``.
+
 - **{{ .Chart.name -}}:** If a hyphen is added after the statement, `{{ .Chart.name -}}` then the trailing whitespace will be ignored during the rendering
 ```yaml
   annotations:
@@ -140,10 +141,15 @@ helm template myapp101 .
     # default Function
     app.kubernetes.io/name: {{ default "MYRELEASE101" .Values.releaseName }}
     # Controlling Leading and Trailing White spaces 
-    leading-whitespace: "   {{- .Chart.Name }}    kalyan"
-    trailing-whitespace: "   {{ .Chart.Name -}}    kalyan"
-    leadtrail-whitespace: "   {{- .Chart.Name -}}    kalyan"    
+    leading-whitespace: "   {{- .Chart.Name }}    manideep"
+    trailing-whitespace: "   {{ .Chart.Name -}}    manideep"
+    leadtrail-whitespace: "   {{- .Chart.Name -}}  manideep"  
+```
+- The output can be as follows
+![imgur](https://github.com/grandhi02/helm/assets/45489301/661611da-2287-455d-a1f1-e3dbe82a4c90)
 
+```t
+```t
 # Change to CHART Directory
 cd helmbasics
 
@@ -153,7 +159,7 @@ helm template myapp101 .
 
 
 ## Step-07: indent and nindent functions
-- **indent:** The [indent function](https://helm.sh/docs/chart_template_guide/function_list/#indent) indents every line in a given string to the specified indent width. This is useful when aligning multi-line strings:
+- **indent:** The [indent function](https://helm.sh/docs/chart_template_guide/function_list/#indent) indents every line in a given string to the specified indent width. It adds the extra specified spaces at front of the value. This is useful when aligning multi-line strings:
 - **nindent:** The [nindent function](https://helm.sh/docs/chart_template_guide/function_list/#nindent) is the same as the indent function, but prepends a new line to the beginning of the string.
 
 ```yaml
@@ -166,15 +172,18 @@ helm template myapp101 .
     app.kubernetes.io/managed-by: {{ .Release.Service | quote | upper | lower }}        
     # default Function
     app.kubernetes.io/name: {{ default "MYRELEASE101" .Values.releaseName | lower }}
-    # Controlling Leading and Trailing White spaces 
-    leading-whitespace: "   {{- .Chart.Name }}    kalyan"
-    trailing-whitespace: "   {{ .Chart.Name -}}    kalyan"
-    leadtrail-whitespace: "   {{- .Chart.Name -}}    kalyan"  
     # indent function
     indenttest: "  {{- .Chart.Name | indent 4 -}}  "
     # nindent function
     nindenttest: "  {{- .Chart.Name | nindent 4 -}}  "  
+```
+- The output can be as follow
+- In nindent, with 0 gap, the value is made arranged from first position after a new line.But for nindent with 14, the value is made positioned after new line and 14 spaces.
+  
+  ![imgur](https://github.com/grandhi02/helm/assets/45489301/7fa80104-2a59-4f7a-82cb-6feaeaa43f69)
 
+
+```t
 # Change to CHART Directory
 cd helmbasics
 
@@ -206,8 +215,12 @@ resources:
         ports:
         - containerPort: 80
         resources: 
-        {{- toYaml .Values.resources | nindent 10}}
+        {{- toYaml .Values.resources | nindent 4}}
+```
+- The output as follows : The resources in values.yaml are indented after converting to yaml using toYaml.
+![imgur](https://github.com/grandhi02/helm/assets/45489301/0838b509-e7e0-4e7e-9548-27103fec846b)
 
+```t
 # Change to CHART Directory
 cd helmbasics
 
