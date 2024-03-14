@@ -269,6 +269,7 @@ helm get manifest myapp2 --revision 1
   ```t
   PS C:\Users\grandhiv> microk8s helm get manifest myapp23
 ---
+```t
 # Source: mychart1/templates/service.yaml
 apiVersion: v1
 kind: Service
