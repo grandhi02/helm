@@ -18,16 +18,124 @@
 - [mychart1 values.yaml](https://github.com/stacksimplify/helm-charts/blob/main/mychart1/values.yaml)
 
 ### Step-02-02: Learn about --dry-run and --debug flags for helm install command
-- Install Helm Chart by overriding NodePort 31231 with 31240
+- Install Helm Chart by overriding NodePort 31231 with 31232
+- Helm Install with --dry-run command
+This step doesnt create any revision but returns the modified yamls under templates after set operation(here service.nodeport) .We can notice that satatus is pending-install as we are checking with dry-run
+
+helm install myapp2 stacksimplify/mychart1 --set service.nodePort=31232 --dry-run
+
 ```t
-# Helm Install with --dry-run command
-helm install myapp901 stacksimplify/mychart1 --set service.nodePort=31240 --dry-run 
+PS C:\Users\grandhiv> microk8s helm install myapp2 stacksimplify/mychart1 --set service.nodePort=31232 --dry-run
+NAME: myapp2
+LAST DEPLOYED: Thu Mar 14 11:54:32 2024
+NAMESPACE: default
+STATUS: pending-install
+REVISION: 1
+HOOKS:
+---
+# Source: mychart1/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "myapp2-mychart1-test-connection"
+  labels:
+    helm.sh/chart: mychart1-0.1.0
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp2
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['myapp2-mychart1:80']
+  restartPolicy: Never
+MANIFEST:
+---
+# Source: mychart1/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp2-mychart1
+  labels:
+    helm.sh/chart: mychart1-0.1.0
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp2
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      nodePort: 31232
+      name: http
+  selector:
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp2
+---
+# Source: mychart1/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp2-mychart1
+  labels:
+    helm.sh/chart: mychart1-0.1.0
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp2
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mychart1
+      app.kubernetes.io/instance: myapp2
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mychart1
+        app.kubernetes.io/instance: myapp2
+    spec:
+      containers:
+        - name: mychart1
+          image: "ghcr.io/stacksimplify/kubenginx:1.0.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
 
-# Helm Install with --dry-run and --debug command
-helm install myapp901 stacksimplify/mychart1 --set service.nodePort=31240 --dry-run --debug
+NOTES:
+1. Get the application URL by running these commands:
+  export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services myapp2-mychart1)
+  export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+PS C:\Users\grandhiv> 
 
+```
+### Helm Install with --dry-run and --debug command
+
+- With debug option, it gives the user supplied details(from set option) and compute supplied details (from values.yaml and chart.yaml).
+- The below output is shown for reference.
+  
+helm install myapp2 stacksimplify/mychart1 --set service.nodePort=31240 --dry-run --debug  
+
+```t
 ## THE BELOW IS THE SAMPLE OUTPUT WITH DEBUG ADDED
-NAME: myapp901
+NAME: myapp2
 NAMESPACE: default
 STATUS: pending-install
 REVISION: 1
@@ -52,10 +160,10 @@ service:
 ### Step-02-03: helm install with --set and test
 ```t
 # Helm Install 
-helm install myapp901 stacksimplify/mychart1 --set service.nodePort=31240 
+helm install myapp2 stacksimplify/mychart1 --set service.nodePort=31240 
 
 # helm status --show-resources
-helm status myapp901 --show-resources
+helm status myapp2 --show-resources
 Observation:
 We can see that our NodePort service is running on port 31240
 
@@ -91,10 +199,10 @@ cd 09-Helm-Override-Values
 cat myvalues.yaml
 
 # helm upgrade with --dry-run and --debug commands
-helm upgrade myapp901 stacksimplify/mychart1 -f myvalues.yaml --dry-run --debug
+helm upgrade myapp2 stacksimplify/mychart1 -f myvalues.yaml --dry-run --debug
 
 # helm upgrade
-helm upgrade myapp901 stacksimplify/mychart1 -f myvalues.yaml
+helm upgrade myapp2 stacksimplify/mychart1 -f myvalues.yaml
 
 # helm status
 helm status myapp901 --show-resources
@@ -109,7 +217,7 @@ Observation:
 ```
 
 ## Step-05: helm get values command
-- **helm get values:** This command downloads a values file for a given release
+- **helm get values:** This command provides the user supplied values( supplied through set opern or the -f flag) file for a given release
 ```t
 # helm get values
 helm get values RELEASE_NAME
@@ -118,7 +226,7 @@ Observation:
 1. Provides the values from current/latest release version 2 from Release myapp901
 
 ## Sample Output
-Kalyans-MacBook-Pro:09-Helm-Override-Values kalyan$ helm get values myapp901
+$ helm get values myapp2
 USER-SUPPLIED VALUES:
 image:
   pullPolicy: IfNotPresent
@@ -137,7 +245,7 @@ helm history myapp901
 
 # helm get values with --revision
 helm get values RELEASE-NAME --revision int
-helm get values myapp901 --revision 1
+helm get values myapp2 --revision 1
 
 ## Sample Output
 Kalyans-MacBook-Pro:09-Helm-Override-Values kalyan$ helm get values myapp901 --revision 1
@@ -147,15 +255,84 @@ service:
 ```
 
 ## Step-06: helm get manifest command 
-- **helm get manifest:** This command fetches the generated manifest for a given release.
+- **helm get manifest:** when we install a chart,the updated templates of resource yamls are submitted to Kubernetes API server. So this command fetches those submitted yaml as manifest for a given release of chart.
 ```t
 # helm get manifest
 helm get manifest RELEASE-NAME
-helm get manifest myapp901
+helm get manifest myapp2
 
 # helm get manifest --revision
 helm get manifest RELEASE-NAME --revision int
-helm get manifest myapp901 --revision 1
+helm get manifest myapp2 --revision 1
+```
+- The output can be as below
+  ```t
+  PS C:\Users\grandhiv> microk8s helm get manifest myapp23
+---
+# Source: mychart1/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp23-mychart1
+  labels:
+    helm.sh/chart: mychart1-0.1.0
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp23
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      nodePort: 31232
+      name: http
+  selector:
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp23
+---
+# Source: mychart1/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp23-mychart1
+  labels:
+    helm.sh/chart: mychart1-0.1.0
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp23
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mychart1
+      app.kubernetes.io/instance: myapp23
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mychart1
+        app.kubernetes.io/instance: myapp23
+    spec:
+      containers:
+        - name: mychart1
+          image: "ghcr.io/stacksimplify/kubenginx:1.0.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
+PS C:\Users\grandhiv>
 ```
 
 ## Step-07: helm get all command
