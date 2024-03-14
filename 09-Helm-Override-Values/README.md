@@ -378,6 +378,130 @@ helm install myapp902 stacksimplify/mychart1 --set service.nodePort=31232
 
 # Option-2: Pass null value to nodePort (service.nodePort=null)
 helm install myapp902 stacksimplify/mychart1 --set service.nodePort=null --dry-run --debug
+```
+- The output can be as follows
+```t
+PS C:\Users\grandhiv> microk8s helm install myapp902 stacksimplify/mychart1 --set service.nodePort=null --dry-run --debug
+install.go:178: [debug] Original chart version: ""
+install.go:195: [debug] CHART PATH: /root/.cache/helm/repository/mychart1-0.1.0.tgz
+
+NAME: myapp902
+LAST DEPLOYED: Thu Mar 14 13:37:51 2024
+NAMESPACE: default
+STATUS: pending-install
+REVISION: 1
+USER-SUPPLIED VALUES:
+service:
+  nodePort: null
+
+COMPUTED VALUES:
+fullnameOverride: ""
+image:
+  pullPolicy: IfNotPresent
+  repository: ghcr.io/stacksimplify/kubenginx      
+  tag: ""
+nameOverride: ""
+podAnnotations: {}
+replicaCount: 1
+service:
+  port: 80
+  type: NodePort
+
+HOOKS:
+---
+# Source: mychart1/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "myapp902-mychart1-test-connection"        
+  labels:
+    helm.sh/chart: mychart1-0.1.0
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp902
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['myapp902-mychart1:80']
+  restartPolicy: Never
+MANIFEST:
+---
+# Source: mychart1/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp902-mychart1
+  labels:
+    helm.sh/chart: mychart1-0.1.0
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp902
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      nodePort:
+      name: http
+  selector:
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp902
+---
+# Source: mychart1/templates/deployment.yaml       
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp902-mychart1
+  labels:
+    helm.sh/chart: mychart1-0.1.0
+    app.kubernetes.io/name: mychart1
+    app.kubernetes.io/instance: myapp902
+    app.kubernetes.io/version: "1.0.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mychart1
+      app.kubernetes.io/instance: myapp902
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mychart1
+        app.kubernetes.io/instance: myapp902       
+    spec:
+      containers:
+        - name: mychart1
+          image: "ghcr.io/stacksimplify/kubenginx:1.0.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+
+NOTES:
+1. Get the application URL by running these commands:
+  export NODE_PORT=$(kubectl get --namespace default -o jsonpath="{.spec.ports[0].nodePort}" services myapp902-mychart1)
+  export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+PS C:\Users\grandhiv>
+```
+
 helm install myapp902 stacksimplify/mychart1 --set service.nodePort=null 
 
 # Additional Notes for understanding
