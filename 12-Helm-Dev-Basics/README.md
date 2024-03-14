@@ -60,7 +60,12 @@ Error: parse error at (helmbasics/templates/deployment.yaml:10): function "somet
   annotations:    
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     # quote function
-    app.kubernetes.io/managed-by: {{ quote .Release.Service }} 
+    app.kubernetes.io/managed-by: {{ quote .Release.Service }}
+- with quote, we get the value helm in double quotes
+- with squote, we can get value in single quotes
+```
+![imgur](https://github.com/grandhi02/helm/assets/45489301/eb647a91-381a-411b-bf43-2822a180e138)
+```t
 
 # Change to CHART Directory
 cd helmbasics
@@ -71,7 +76,8 @@ helm template myapp101 .
 
 ## Step-04: Pipeline
 - Pipelines are an efficient way of getting several things done in sequence. 
-- Inverting the order is a common practice in templates (.val | quote ) 
+- Inverting the order is a common practice in templates (.val | quote ), i.e the value before pipe is working as input to function after pipe. so it returns a value in double quotes.9 the value move from left to right )
+   
 ```t
 # Add Quote Function with Pipeline
   annotations:    
@@ -80,7 +86,10 @@ helm template myapp101 .
     app.kubernetes.io/managed-by: {{ quote .Release.Service }} 
     # quote function with pipeline
     app.kubernetes.io/managed-by: {{ .Release.Service | quote }}               
+```
+![imgur](https://github.com/grandhi02/helm/assets/45489301/2998f631-5a1c-461f-aa16-ba63313cc107)
 
+```t
 # Change to CHART Directory
 cd helmbasics
 
@@ -106,6 +115,10 @@ replicaCount: 3
     app.kubernetes.io/name: {{ default "MYRELEASE101" .Values.releaseName | lower }}
 spec:
   replicas: {{ default 1  .Values.replicaCount }}
+```
+- In the below image, the release Name is values.yaml is "" or null or empty-value which is considered as empty while using default, so the value MYRELEASE101 is obtained.
+  
+![imgur](https://github.com/grandhi02/helm/assets/45489301/fe80bdf4-b34b-4a5f-97e9-3d175b1222af)
 
 # Change to CHART Directory
 cd helmbasics
