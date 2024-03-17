@@ -49,6 +49,11 @@ We should see all the annotations displayed
         appTech: HTML
         appType: webserver
 ```
+- The output will be as follows
+- With action block ccombined with '.' accesses all the content once and puts that in YAML.To access root objects in "with" action block, use $ as below. 
+  ![imgur](https://github.com/grandhi02/helm/assets/45489301/5b6f46ab-0088-43cd-ac98-24c13ed2ec92)
+
+
 
 ## Step-05: Try to access any Root Object in "with" action block
 ```t
