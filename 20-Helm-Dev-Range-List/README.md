@@ -23,8 +23,10 @@ kind: Namespace
 metadata:
   name: {{ .name }}
 ---  
-{{- end }}      
-
+{{- end }}
+```  
+- In above, --- is used to divide the multiple yaml(yaml separator, using yaml separator, we can have multiple yaml in a same file and execute it).Here, in above, using range(akin to for loop) create multiple YAMLs.so we need to separate each YAML with `---`.  
+```t
 # Change to Chart Directory
 cd helmbasics  
 
