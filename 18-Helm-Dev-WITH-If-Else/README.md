@@ -34,6 +34,8 @@ and .Arg1 .Arg2
 ```
 - Use of with, simplifies the if-else block and increases the readability
 ![image](https://github.com/grandhi02/helm/assets/45489301/7eff12c0-7452-42aa-9a70-f7a0cee9c6ae)
+- The output using "with"
+  ![imgur](https://github.com/grandhi02/helm/assets/45489301/91dd9fc4-f8e9-4064-be00-8c2e14c84da1)
 
 
 ## Step-04: Implement if-else for replicas with Boolean 
