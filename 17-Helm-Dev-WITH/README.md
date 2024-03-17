@@ -130,8 +130,16 @@ data:
 {{- with .Values.myapps.data.config }}
   application-name: {{ .appName }}
   application-type: {{ .appType }}
-{{- end}} 
+{{- end}}
+```
 
+- we can access some values in values.yaml into YAML template as below
+- The output as follows
+- ![imgur](https://github.com/grandhi02/helm/assets/45489301/f5c094e4-bd0c-4972-95a0-255327b8418b)
+
+
+
+```t
  # Change to Chart Directory
 cd helmbasics  
 
