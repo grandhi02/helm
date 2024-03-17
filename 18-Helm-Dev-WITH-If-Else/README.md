@@ -32,6 +32,10 @@ myapp:
 # and Syntax
 and .Arg1 .Arg2
 ```
+- Use of with, simplifies the if-else block as below
+  ![imgur](https://github.com/grandhi02/helm/assets/45489301/7bbda61a-cef5-4d6b-9c37-2cc71f6cef19)
+
+
 ## Step-04: Implement if-else for replicas with Boolean 
 
 ```yaml
