@@ -5,10 +5,11 @@
 
 ## Step-02: Variables in Helm Templates
 ```yaml
-# Change-1: Add Variable at the top of deployment template
+# Change-1: Add Variable at the top of deployment template( u can define anywhere in yaml)
+:= is a assignment operator for variables
 {{- $chartname := .Chart.Name -}}
 
-# Change-2: Add appHelmChart annotation with variable in deployment.yaml
+# Change-2: Add appHelmChart annotation with variable in deployment.yaml( variable can be accessed in Yaml).
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -16,8 +17,12 @@
         {{- toYaml . | nindent 8 }}
         appManagedBy: {{ $.Release.Service }}
         appHelmChart: {{ $chartname }}        
-      {{- end }}  
+      {{- end }}
+```
+- The sample output
+![imgur](https://github.com/grandhi02/helm/assets/45489301/107f4193-5a0b-46af-ab70-998f3f49ef5b)
 
+```t
 # Change to Chart Directory
 cd helmbasics  
 
