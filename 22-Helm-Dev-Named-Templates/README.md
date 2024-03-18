@@ -8,10 +8,24 @@
 - Replace `template call` with special purpose function `include` in combination with `pipelines` and test it
 
 
-## Step-02: Create a Named Template
+## Step-02: Create a Named Template( akin to reusable func)
 - **File Location:** deployment.yaml
 - Define the below named template in `deployment.yaml`
+- A named template is a template defined in _helpers.tpl with a name(using `define`)
+-  The named template are created using `define` keyword and `chartName.relevant-template-name` as below.
+-  These are global and can be accessed in all templates.
+-  we can call these named template in YAML using `template` keyword as below.
+  ```t
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}-deployment # Action Element
+  labels:
+  {{- template "helmbasics.labels" . }}
+```
+
 ```t
+
 {{/* Common Labels */}}
 {{- define "helmbasics.labels"}}
     app: nginx
